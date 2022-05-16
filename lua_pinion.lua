@@ -4,15 +4,15 @@ require "functions_array_mathematic"
 require "functions_gear3"
 
 
-function create_pinion(counter, increment, z_p_in)
+function create_pinion(counter, increment, z_p_in, m_in, height)
 
 pi = 3.14159265
 
-m = 3
+m = m_in
 z_w = 35
 z_p = z_p_in
 r_s = 3
-input_fr_p = 0
+input_fr_p = 1
 
 error_limit = 0.000001
 
@@ -39,6 +39,7 @@ y_pitch_w = temp["Y"]
 temp = calc_circle_pt(hf_p_r, 200)
 x_ded_w = temp["X"]
 y_ded_w = temp["Y"]
+
 if z_p <= 10 then 
 	t_w = 1.05
 else
@@ -117,74 +118,84 @@ end
 
 
 if input_fr_p == 1 then
+	pt_de_p = { 0, hf_p_r }
+	test = { { pt_de_p[1] }, { pt_de_p[2] } }
+	pt_de_p = rot_table_mat(2 * pi / (2 * z_p), test)
 	
+	
+	dist_ded_middle = distance(pt_de_p[1][1], pt_de_p[2][1], 0, 0)
+	A = Point(pt_de_p[1][1], pt_de_p[2][1], 0)
+	B = Point(dedendum_pt_p[1][1], dedendum_pt_p[2][1], 0)
+	crossProduct = A ^ B
+	dotProduct = A..B
+	normalProduct = math.sqrt(crossProduct[1]^2 + crossProduct[2]^2 + crossProduct[3]^2)
+	theta_ded = math.atan2(normalProduct, dotProduct)
+	fillet_radius = (dist_ded_middle * math.sin(theta_ded)) / (1 - math.sin(theta_ded))
+	unit_A = arr_div1(A, math.sqrt(A[1]^2 + A[2]^2 + A[3]^2))
+	-- POTENTIALLY PROBLEMATIC CODE: We are assuming pt_de_p has 2 elements in its array. If not, then we have to find a way to flatten the array. I don't have time to deal with it
+	fillet_circle_center = arr_add2({ pt_de_p[1][1], pt_de_p[2][1] }, arr_mult1({ unit_A[1], unit_A[2] }, fillet_radius))
+	fillet_circle_center_x = fillet_circle_center[1]
+	fillet_circle_center_y = fillet_circle_center[2]
+	dist_ded_fillet_start = (dist_ded_middle + fillet_radius) * math.cos(theta_ded)
+	unit_B = arr_div1(B, math.sqrt(B[1]^2 + B[2]^2 + B[3]^2))
+	start_fillet_ded = arr_mult1(unit_B, dist_ded_fillet_start)
+	dedendum_pt_p[1][1] = start_fillet_ded[1]
+	dedendum_pt_p[2][1] = start_fillet_ded[2]
 	temp_x = arr_mult1(dedendum_pt_p[1], -1)
 	temp_y = dedendum_pt_p[2]
-	
-	temp = { temp_x, temp_y}
+	temp = arr_merge({ temp_x }, { temp_y })
 	rot_angle = -2 * pi / z_p
 	temp_ded = rot_table_mat(-rot_angle, temp)
-	
-	x0 = 0
-	y0 = 0
-	a_A = getSlope(x0, y0, dedendum_pt_p[1][1], dedendum_pt_p[2][1])
-	b_A = y0 -- PROBLEMATIC CODE: this is assuming that x0 and y0 are == 0
-	
-	x1 = 0
-	y1 = 0
-	a_B = getSlope(x1, y1, temp_ded[1][1], temp_ded[2][1])
-	b_B = y1 -- PROBLEMATIC CODE: this is assuming that x0 and y0 are == 0
-	
-	a_A_o = -1 / a_A
-	b_A_o = dedendum_pt_p[2][1] - a_A_o * dedendum_pt_p[1][1]
-	
-	a_B_o = -1 / a_B
-	b_B_o = temp_ded[2][1] - a_B_o * temp_ded[1][1]
-	
-	-- SOLVE FOR WHEN Y = 0
-	fillet_circle_center_x = -(b_A_o - b_B_o) / (a_A_o - a_B_o) -- PROBLEMATIC CODE: this is assuming that we are representing a line function
-	fillet_circle_center_y = a_A_o * fillet_circle_center_x + b_A_o
-	
-	fillet_radius = distance(dedendum_pt_p[1][1], dedendum_pt_p[2][1], fillet_circle_center_x, fillet_circle_center_y)
-	
-	angle_start = math.atan2(dedendum_pt_p[2][1] - fillet_circle_center_y, dedendum_pt_p[1][1] - fillet_circle_center_x)
-	angle_end = math.atan2(temp_ded[2][1] - fillet_circle_center_y, temp_ded[1][1] - fillet_circle_center_x)
+	angle_start_dd = math.atan2(dedendum_pt_p[2][1] - fillet_circle_center_y, dedendum_pt_p[1][1] - fillet_circle_center_x )
+	angle_end_dd = math.atan2(temp_ded[2][1] - fillet_circle_center_y, temp_ded[1][1] - fillet_circle_center_x)
+
 	
 	
+	temp_c = arc_circle(angle_start_dd, angle_end_dd, 80, fillet_circle_center_x, fillet_circle_center_y, fillet_radius)
+
+	fillet_x = temp_c.X
+	fillet_y = temp_c.Y
+	temptemp = arr_merge(arr_reverse(fillet_x), arr_reverse(dedendum_pt_p[1]))
 	
-	temp = arc_circle(angle_start,  angle_end, 80, fillet_circle_center_x, fillet_circle_center_y, fillet_radius)
-	fillet_x = temp.X
-	fillet_y = temp.Y
+	tooth_profile_left_x = arr_merge(temptemp, x_arc_p)
 	
-	tooth_profile_left_x_p = arr_merge(arr_merge(arr_reverse(fillet_x), arr_reverse(dedendum_pt_p[1])), x_arc_p)
-	tooth_profile_left_y_p = arr_merge(arr_merge(arr_reverse(fillet_y), arr_reverse(dedendum_pt_p[2])), y_arc_p)
+	temptemp = arr_merge(arr_reverse(fillet_y), arr_reverse(dedendum_pt_p[2]))
+	tooth_profile_left_y = arr_merge(temptemp, y_arc_p)
+  
+	tooth_profile_right_x = arr_mult1(arr_merge(arr_reverse(dedendum_pt_p[1]), x_arc_p), -1)
+	tooth_profile_right_y = arr_merge(arr_reverse(dedendum_pt_p[2]), y_arc_p)
 	
-	tooth_profile_right_x_p = arr_mult1(arr_merge(arr_reverse(dedendum_pt_p[1]), x_arc_p), -1)
-	tooth_profile_right_y_p = arr_merge(arr_reverse(dedendum_pt_p[2]), y_arc_p)
+
+
 end
 
 
 if input_fr_p == 0 then
 
-	pt_de_p = { { 0 }, { hf_p_r } }
-	pt_de_p = rot_table_mat(2 * pi / ( 2 * z_p ), pt_de_p)
-	
-	angle_start_dd = math.atan2(dedendum_pt_p[2][1] - 0, dedendum_pt_p[1][1] - 0)
+	pt_de_p = { 0, hf_p_r }
+	test = { { pt_de_p[1] }, { pt_de_p[2] } }
+	pt_de_p = rot_table_mat(2 * pi / (2 * z_p), test)
+
+	angle_start_dd = math.atan2(dedendum_pt_p[2][1] - 0, dedendum_pt_p[1][1] - 0 )
 	angle_end_dd = math.atan2(pt_de_p[2][1] - 0, pt_de_p[1][1] - 0)
-	temp = arc_circle(angle_start_dd, angle_end_dd, 70, 0, 0, hf_p_r)
-	x_ded_p = temp.X
-	y_ded_p = temp.Y
 	
-	tooth_profile_left_x_p = arr_merge(arr_merge(arr_reverse(x_ded_p), arr_reverse(dedendum_pt_p[1])), x_arc_p)
-	tooth_profile_left_y_p = arr_merge(arr_merge(arr_reverse(y_ded_p), arr_reverse(dedendum_pt_p[2])), y_arc_p)
+	temp_c = arc_circle(angle_start_dd, angle_end_dd, 70, 0, 0, hf_p_r)
+	x_ded_p = temp_c.X
+	y_ded_p = temp_c.Y
 	
-	tooth_profile_right_x_p = arr_mult1(tooth_profile_left_x_p, -1)
-	tooth_profile_right_y_p = tooth_profile_left_y_p
+	temptemp = arr_merge(arr_reverse(x_ded_p), arr_reverse(dedendum_pt_p[1]))
+	tooth_profile_left_x = arr_merge(temptemp, x_arc_p)
+
+	temptemp = arr_merge(arr_reverse(y_ded_p), arr_reverse(dedendum_pt_p[2]))
+	tooth_profile_left_y = arr_merge(temptemp, y_arc_p)
+  
+	tooth_profile_right_x = arr_mult1(tooth_profile_left_x, -1)
+	tooth_profile_right_y = tooth_profile_left_y
 
 end
 
-tooth_profile_x_p = arr_merge(tooth_profile_left_x_p, arr_reverse(tooth_profile_right_x_p))
-tooth_profile_y_p = arr_merge(tooth_profile_left_y_p, arr_reverse(tooth_profile_right_y_p))
+tooth_profile_x_p = arr_merge(tooth_profile_left_x, arr_reverse(tooth_profile_right_x))
+tooth_profile_y_p = arr_merge(tooth_profile_left_y, arr_reverse(tooth_profile_right_y))
 
 tooth_profile_p = { tooth_profile_x_p, tooth_profile_y_p }
 
@@ -201,14 +212,13 @@ for i=0, z_p - 1 do
 end
 
 points_v = make_vectors(x_pinion, y_pinion)
-dir = v(0,0,10)
+dir = v(0,0,height)
 
 dist= r_w+r_p
 
 emit(translate(0,dist+5,0) * rotate(0, 0, -counter * increment) *linear_extrude(dir, points_v))
 
 
-print(tprint(tooth_profile_p))
 end 
 
 
