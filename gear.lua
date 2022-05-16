@@ -1,21 +1,21 @@
 require "functions_array"
 require "functions_gear"
-require "vector_functions"
+require "functions_vector"
 -- User Inputs:
 
 
-function create_gear(counter, increment, z_w_in, m_in, height)
+function create_gear(counter, increment, z_w_in, m_in, resolution, height, input_fr_w_UI, show_cutouts, z_p_in, r_s_in)
 
 pi = 3.14159265
 input = {}
 
 m = m_in
 
-cutout = 1
+cutout = show_cutouts
 z_w = z_w_in
-z_p = 12
-r_s = 20
-input_fr_w = 1
+z_p = z_p_in
+r_s = r_s_in
+input_fr_w = input_fr_w_UI
 error_limit = 0.000001
 pitch = m * pi
 u = z_w / z_p
@@ -58,12 +58,12 @@ arc_center = { arr_add2(rhombus_cent, arr_mult1(vec_arc_center, b)) }
 angle_start = math.atan2(dedendum_pt[2][2] - arc_center[1][2], dedendum_pt[1][2] - arc_center[1][1])
 angle_end = math.atan2(end_arc[2] - arc_center[1][2], end_arc[1] - arc_center[1][1])
 -- 80??    
-temp_arc = arc_circle(angle_start, angle_end, 80, arc_center[1][1], arc_center[1][2], a_r)
+temp_arc = arc_circle(math.abs(angle_start), angle_end, resolution, arc_center[1][1], arc_center[1][2], a_r)
 x_arc = temp_arc["X"]
 y_arc = temp_arc["Y"]
 
 
-if input_fr_w == 1 then
+if input_fr_w == true then
 
 	pt_de_w = { 0, hf_w_r }
 	test = { { pt_de_w[1] }, { pt_de_w[2] } }
@@ -96,7 +96,7 @@ if input_fr_w == 1 then
 	angle_start_dd = math.atan2(dedendum_pt[2][1] - fillet_circle_center_y, dedendum_pt[1][1] - fillet_circle_center_x )
 	angle_end_dd = math.atan2(temp_ded[2][1] - fillet_circle_center_y, temp_ded[1][1] - fillet_circle_center_x)
 	
-	temp_c = arc_circle(angle_start_dd, angle_end_dd, 80, fillet_circle_center_x, fillet_circle_center_y, fillet_radius)
+	temp_c = arc_circle(angle_start_dd, angle_end_dd, resolution, fillet_circle_center_x, fillet_circle_center_y, fillet_radius)
 	fillet_x = temp_c.X
 	fillet_y = temp_c.Y
 	
@@ -113,14 +113,14 @@ if input_fr_w == 1 then
 
 end
 
-if input_fr_w == 0 then
+if input_fr_w == false then
 
 	pt_de_w = { 0, hf_w_r }
 	test = { { pt_de_w[1] }, { pt_de_w[2] } }
 	pt_de_w = rot_table_mat(2 * pi / (2 * z_w), test)
 	angle_start_dd = math.atan2(dedendum_pt[2][1] - 0, dedendum_pt[1][1] - 0)
 	angle_end_dd = math.atan2(pt_de_w[2][1] - 0, pt_de_w[1][1] - 0)
-	temp_c = arc_circle(angle_start_dd, angle_end_dd, 70, 0, 0, hf_w_r)
+	temp_c = arc_circle(angle_start_dd, angle_end_dd, resolution, 0, 0, hf_w_r)
 	x_ded = temp_c.X
 	y_ded = temp_c.Y
 	temptemp = arr_merge(arr_reverse(x_ded), arr_reverse(dedendum_pt[1]))
@@ -200,7 +200,7 @@ for i=0, 4 do
 	table.insert(y_cutout, y_cutout[1])
 	-- print(tprint({ x_cutout, y_cutout }))
 	
-	if cutout == 1 then
+	if cutout == true then
 	table.insert(FinalShape, linear_extrude(dir, make_vectors(x_cutout, y_cutout)))
 	end
 end

@@ -3,15 +3,15 @@ require "functions_array"
 require "functions_gear"
 
 
-function create_pinion(counter, increment, z_p_in, m_in, height)
+function create_pinion(counter, increment, z_p_in, m_in, resolution, height, z_w_in, r_s_p_in, input_fr_p_UI)
 
 pi = 3.14159265
 
 m = m_in
-z_w = 35
+z_w = z_w_in
 z_p = z_p_in
-r_s = 3
-input_fr_p = 1
+r_s = r_s_p_in
+input_fr_p = input_fr_p_UI
 
 error_limit = 0.000001
 
@@ -100,7 +100,7 @@ if round == 0 then
 	angle_start = math.atan2(dedendum_pt_p[2][2] - arc_center[2], dedendum_pt_p[1][2] - arc_center[1])
 	angle_end = math.atan2(end_arc_p[2][1] - arc_center[2], end_arc_p[1][1] - arc_center[1])
 	
-	temp = arc_circle(angle_start, angle_end, 80, arc_center[1], arc_center[2], a_r_p)
+	temp = arc_circle(angle_start, angle_end, resolution, arc_center[1], arc_center[2], a_r_p)
 	x_arc_p = temp.X
 	y_arc_p = temp.Y
 	
@@ -110,13 +110,13 @@ elseif round == 1 then
 	
 	angle_start = math.atan2(dedendum_pt_p[2][2] - arc_center[2], dedendum_pt_p[1][2] - arc_center[1])
 	angle_end = math.atan2(end_arc_p[2] - arc_center[2], end_arc_p[1] - arc_center[1])
-	temp = arc_circle(angle_start, angle_end - 2*pi, 80, arc_center[1], arc_center[2], a_r_p)
+	temp = arc_circle(angle_start, angle_end - 2*pi, resolution, arc_center[1], arc_center[2], a_r_p)
 	x_arc_p = temp.X
 	y_arc_p = temp.Y
 end
 
 
-if input_fr_p == 1 then
+if input_fr_p == true then
 	pt_de_p = { 0, hf_p_r }
 	test = { { pt_de_p[1] }, { pt_de_p[2] } }
 	pt_de_p = rot_table_mat(2 * pi / (2 * z_p), test)
@@ -150,7 +150,7 @@ if input_fr_p == 1 then
 
 	
 	
-	temp_c = arc_circle(angle_start_dd, angle_end_dd, 80, fillet_circle_center_x, fillet_circle_center_y, fillet_radius)
+	temp_c = arc_circle(angle_start_dd, angle_end_dd, resolution, fillet_circle_center_x, fillet_circle_center_y, fillet_radius)
 
 	fillet_x = temp_c.X
 	fillet_y = temp_c.Y
@@ -169,7 +169,7 @@ if input_fr_p == 1 then
 end
 
 
-if input_fr_p == 0 then
+if input_fr_p == false then
 
 	pt_de_p = { 0, hf_p_r }
 	test = { { pt_de_p[1] }, { pt_de_p[2] } }
@@ -178,7 +178,7 @@ if input_fr_p == 0 then
 	angle_start_dd = math.atan2(dedendum_pt_p[2][1] - 0, dedendum_pt_p[1][1] - 0 )
 	angle_end_dd = math.atan2(pt_de_p[2][1] - 0, pt_de_p[1][1] - 0)
 	
-	temp_c = arc_circle(angle_start_dd, angle_end_dd, 70, 0, 0, hf_p_r)
+	temp_c = arc_circle(angle_start_dd, angle_end_dd, resolution, 0, 0, hf_p_r)
 	x_ded_p = temp_c.X
 	y_ded_p = temp_c.Y
 	
@@ -211,13 +211,24 @@ for i=0, z_p - 1 do
 end
 
 points_v = make_vectors(x_pinion, y_pinion)
+
+x_shaft = calc_circle_pt(r_s, 100)["X"]
+y_shaft = calc_circle_pt(r_s, 100)["Y"]
+
+shaft = make_vectors(x_shaft, y_shaft)
+
 dir = v(0,0,height)
 
+FinalShape = { linear_extrude(dir, points_v), linear_extrude(dir, shaft) }
+diff = difference(FinalShape)
+
+
 dist= r_w+r_p
-
-emit(translate(0,dist+5,0) * rotate(0, 0, -counter * increment) *linear_extrude(dir, points_v))
-
+if (z_p % 2) == 0 then 
+	emit(translate(0,dist,0) * rotate(0, 0, -counter * increment) * rotate(0, 0, 15) * diff)
+else
+	emit(translate(0,dist,0) * rotate(0, 0, -counter * increment) * diff)
 
 end 
 
-
+end
