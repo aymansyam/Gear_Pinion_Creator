@@ -224,10 +224,6 @@ diff = difference(FinalShape)
 
 
 dist= r_w+r_p
-if (z_p % 2) == 0 then 
-	emit(translate(0,dist,0) * rotate(0, 0, -counter * increment) * rotate(0, 0, 17) * diff) -- replace 17 with a mathematical way 
-else
-	emit(translate(0,dist,0) * rotate(0, 0, -counter * increment) * diff)
-end 
+emit(translate(0,dist,0) * rotate(0, 0, -counter * increment) * diff)
 
 end

@@ -206,7 +206,10 @@ end
 cutouts = make_vectors(x_cutout, y_cutout)
 diff = difference(FinalShape)
 
-emit(rotate(0, 0, counter * increment) * diff)
-
+if (z_p % 2) == 0 then 
+	emit(rotate(0, 0, counter * increment) * rotate(0, 0, 15) * diff)
+else
+	emit(rotate(0, 0, counter * increment) * diff)
+end
 end 
 
