@@ -1,0 +1,5 @@
+require "main3"
+require "lua_pinion"
+
+create_pinion()
+create_gear() 
