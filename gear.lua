@@ -57,7 +57,6 @@ vec_arc_center = { -vec_rhombus[2], vec_rhombus[1] }
 arc_center = { arr_add2(rhombus_cent, arr_mult1(vec_arc_center, b)) } 
 angle_start = math.atan2(dedendum_pt[2][2] - arc_center[1][2], dedendum_pt[1][2] - arc_center[1][1])
 angle_end = math.atan2(end_arc[2] - arc_center[1][2], end_arc[1] - arc_center[1][1])
--- 80??    
 temp_arc = arc_circle(math.abs(angle_start), angle_end, resolution, arc_center[1][1], arc_center[1][2], a_r)
 x_arc = temp_arc["X"]
 y_arc = temp_arc["Y"]
@@ -109,7 +108,6 @@ if input_fr_w == true then
 	tooth_profile_right_x = arr_mult1(arr_merge(arr_reverse(dedendum_pt[1]), x_arc), -1)
 	tooth_profile_right_y = arr_merge(arr_reverse(dedendum_pt[2]), y_arc)
 	
-	-- print(tprint(angle_end_dd)) 
 
 end
 
@@ -198,7 +196,6 @@ for i=0, 4 do
 	y_cutout = merge_table(y_cutout, temp_wheel[2])
 	table.insert(x_cutout, x_cutout[1])
 	table.insert(y_cutout, y_cutout[1])
-	-- print(tprint({ x_cutout, y_cutout }))
 	
 	if cutout == true then
 	table.insert(FinalShape, linear_extrude(dir, make_vectors(x_cutout, y_cutout)))
@@ -212,5 +209,4 @@ diff = difference(FinalShape)
 emit(rotate(0, 0, counter * increment) * diff)
 
 end 
--- print(FinalShape) 
 
