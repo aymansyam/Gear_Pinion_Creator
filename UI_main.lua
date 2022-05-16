@@ -1,5 +1,5 @@
-require "main3"
-require "lua_pinion"
+require "gear"
+require "pinion"
 
 counter = ui_scalarBox('Animate/Rotate',0 ,1) 
 

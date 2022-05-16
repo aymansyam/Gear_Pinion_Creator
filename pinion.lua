@@ -1,7 +1,6 @@
  -- Welcome to IceSL!
-require "functions_array_manipulation"
-require "functions_array_mathematic"
-require "functions_gear3"
+require "functions_array"
+require "functions_gear"
 
 
 function create_pinion(counter, increment, z_p_in, m_in, height)

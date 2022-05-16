@@ -1,7 +1,6 @@
-require "functions_array_manipulation"
-require "functions_array_mathematic"
-require "functions_gear3"
-require "point"
+require "functions_array"
+require "functions_gear"
+require "vector_functions"
 -- User Inputs:
 
 
@@ -141,7 +140,7 @@ tooth_profile = { tooth_profile_x, tooth_profile_y }
 
 points_v = make_vectors(tooth_profile_x, tooth_profile_y)
 
-dir = v(0,0,10)
+dir = v(0,0,height)
 
 rot_angle = 2 * pi / z_w
 
