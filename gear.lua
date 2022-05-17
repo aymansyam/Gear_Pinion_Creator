@@ -4,7 +4,7 @@ require "functions_vector"
 -- User Inputs:
 
 
-function create_gear(counter, increment, z_w_in, m_in, resolution, height, input_fr_w_UI, show_cutouts, z_p_in, r_s_in)
+function create_gear(counter, increment, z_w_in, m_in, resolution, height, input_fr_w_UI, show_cutouts, z_p_in, r_s_in, ratio)
 
 pi = 3.14159265
 input = {}
@@ -205,7 +205,9 @@ end
 
 cutouts = make_vectors(x_cutout, y_cutout)
 diff = difference(FinalShape)
-
+if (z_p % 2 == 0) then
+	diff = rotate(0, 0, ratio - 5.05) * diff
+end
 
 emit(rotate(0, 0, counter * increment) * diff)
 end 
