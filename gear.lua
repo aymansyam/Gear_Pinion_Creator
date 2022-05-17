@@ -6,7 +6,6 @@ require "lib/functions_vector"
 
 function create_gear(counter, increment, z_w_in, m_in, resolution, height, input_fr_w_UI, show_cutouts, z_p_in, r_s_in)
 
-pi = 3.14159265
 input = {}
 
 m = m_in
@@ -17,13 +16,13 @@ z_p = z_p_in
 r_s = r_s_in
 input_fr_w = input_fr_w_UI
 error_limit = 0.000001
-pitch = m * pi
+pitch = m * math.pi
 u = z_w / z_p
 d_w = m * z_w
 r_w = d_w / 2
 d_p = m * z_p
 r_p = d_p / 2
-hf_w = m * pi / 2
+hf_w = m * math.pi / 2
 hf_w_r = r_w - hf_w
 f_a = calc_addendum_factor(error_limit, u, z_p)
 h_a = 0.95 * f_a * m
@@ -42,7 +41,7 @@ dedendum_pt_st = {}
 dedendum_pt_st[1] = {0, 0}
 dedendum_pt_st[2] = { hf_w_r, r_w }
 rot_ded_deg = 360 / (4 * z_w)
-rot_ded = rot_ded_deg * pi/180;
+rot_ded = rot_ded_deg * math.pi/180;
 dedendum_pt = rot_table(dedendum_pt_st, rot_ded)     
 start_arc = { dedendum_pt[1][2], dedendum_pt[2][2] }
 end_arc = { 0, ha_w_r }
@@ -66,7 +65,7 @@ if input_fr_w == true then
 
 	pt_de_w = { 0, hf_w_r }
 	test = { { pt_de_w[1] }, { pt_de_w[2] } }
-	pt_de_w = rot_table_mat(2 * pi / (2 * z_w), test)
+	pt_de_w = rot_table_mat(2 * math.pi / (2 * z_w), test)
 	
 	dist_ded_middle = distance(pt_de_w[1][1], pt_de_w[2][1], 0, 0)
 	A = Point(pt_de_w[1][1], pt_de_w[2][1], 0)
@@ -89,7 +88,7 @@ if input_fr_w == true then
 	temp_x = arr_mult1(dedendum_pt[1], -1)
 	temp_y = dedendum_pt[2]
 	temp = arr_merge({ temp_x }, { temp_y })
-	rot_angle = -2 * pi / z_w
+	rot_angle = -2 * math.pi / z_w
 	temp_ded = rot_table_mat(-rot_angle, temp)
 	
 	angle_start_dd = math.atan2(dedendum_pt[2][1] - fillet_circle_center_y, dedendum_pt[1][1] - fillet_circle_center_x )
@@ -115,7 +114,7 @@ if input_fr_w == false then
 
 	pt_de_w = { 0, hf_w_r }
 	test = { { pt_de_w[1] }, { pt_de_w[2] } }
-	pt_de_w = rot_table_mat(2 * pi / (2 * z_w), test)
+	pt_de_w = rot_table_mat(2 * math.pi / (2 * z_w), test)
 	angle_start_dd = math.atan2(dedendum_pt[2][1] - 0, dedendum_pt[1][1] - 0)
 	angle_end_dd = math.atan2(pt_de_w[2][1] - 0, pt_de_w[1][1] - 0)
 	temp_c = arc_circle(angle_start_dd, angle_end_dd, resolution, 0, 0, hf_w_r)
@@ -140,7 +139,7 @@ points_v = make_vectors(tooth_profile_x, tooth_profile_y)
 
 dir = v(0,0,height)
 
-rot_angle = 2 * pi / z_w
+rot_angle = 2 * math.pi / z_w
 
 x_wheel = {}
 y_wheel = {}
@@ -171,11 +170,11 @@ x_outer_circle = calc_circle_pt(hf_w_r - hf_w_r*0.1, 100)["X"]
 y_outer_circle = calc_circle_pt(hf_w_r - hf_w_r*0.1, 100)["Y"]
 
 
-inner_arc_x = arc_circle(pi/3, 2*pi/3, 100, 0, 0, r_s + r_s*0.45)["X"]
-inner_arc_y = arc_circle(pi/3, 2*pi/3, 100, 0, 0, r_s + r_s*0.45)["Y"]
+inner_arc_x = arc_circle(math.pi/3, 2*math.pi/3, 100, 0, 0, r_s + r_s*0.45)["X"]
+inner_arc_y = arc_circle(math.pi/3, 2*math.pi/3, 100, 0, 0, r_s + r_s*0.45)["Y"]
 
-outer_arc_x = arc_circle(pi/3, 2*pi/3, 100, 0, 0, hf_w_r - hf_w_r*0.1)["X"]
-outer_arc_y = arc_circle(pi/3, 2*pi/3, 100, 0, 0, hf_w_r - hf_w_r*0.1)["Y"]
+outer_arc_x = arc_circle(math.pi/3, 2*math.pi/3, 100, 0, 0, hf_w_r - hf_w_r*0.1)["X"]
+outer_arc_y = arc_circle(math.pi/3, 2*math.pi/3, 100, 0, 0, hf_w_r - hf_w_r*0.1)["Y"]
 temp1 = merge_table(inner_arc_x, arr_reverse(outer_arc_x))
 temp2 = merge_table(inner_arc_y, arr_reverse(outer_arc_y))
 
@@ -184,7 +183,7 @@ table.insert(temp2, inner_arc_y[1])
 circular_segment = { temp1, temp2 }
 
 
-rot_angle = 2 * pi / 4
+rot_angle = 2 * math.pi / 4
 FinalShape = { linear_extrude(dir, points_v), linear_extrude(dir, shaft) }
 x_cutout = {}
 y_cutout = {}

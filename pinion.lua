@@ -5,7 +5,6 @@ require "lib/functions_gear"
 
 function create_pinion(counter, increment, z_p_in, m_in, resolution, height, z_w_in, r_s_p_in, input_fr_p_UI, offset)
 
-pi = 3.14159265
 
 m = m_in
 z_w = z_w_in
@@ -15,14 +14,14 @@ input_fr_p = input_fr_p_UI
 
 error_limit = 0.000001
 
-pitch = m * pi
+pitch = m * math.pi
 u = z_w/z_p
 d_w = m * z_w
 r_w = d_w/2
 d_p = m * z_p
 r_p = d_p/2
 
-hf_w = m * pi/2
+hf_w = m * math.pi/2
 hf_w_r = r_w - hf_w
 
 f_a = calc_addendum_factor(error_limit, u, z_w)
@@ -110,7 +109,7 @@ elseif round == 1 then
 	
 	angle_start = math.atan2(dedendum_pt_p[2][2] - arc_center[2], dedendum_pt_p[1][2] - arc_center[1])
 	angle_end = math.atan2(end_arc_p[2] - arc_center[2], end_arc_p[1] - arc_center[1])
-	temp = arc_circle(angle_start, angle_end - 2*pi, resolution, arc_center[1], arc_center[2], a_r_p)
+	temp = arc_circle(angle_start, angle_end - 2*math.pi, resolution, arc_center[1], arc_center[2], a_r_p)
 	x_arc_p = temp.X
 	y_arc_p = temp.Y
 end
@@ -119,7 +118,7 @@ end
 if input_fr_p == true then
 	pt_de_p = { 0, hf_p_r }
 	test = { { pt_de_p[1] }, { pt_de_p[2] } }
-	pt_de_p = rot_table_mat(2 * pi / (2 * z_p), test)
+	pt_de_p = rot_table_mat(2 * math.pi / (2 * z_p), test)
 	
 	
 	dist_ded_middle = distance(pt_de_p[1][1], pt_de_p[2][1], 0, 0)
@@ -143,7 +142,7 @@ if input_fr_p == true then
 	temp_x = arr_mult1(dedendum_pt_p[1], -1)
 	temp_y = dedendum_pt_p[2]
 	temp = arr_merge({ temp_x }, { temp_y })
-	rot_angle = -2 * pi / z_p
+	rot_angle = -2 * math.pi / z_p
 	temp_ded = rot_table_mat(-rot_angle, temp)
 	angle_start_dd = math.atan2(dedendum_pt_p[2][1] - fillet_circle_center_y, dedendum_pt_p[1][1] - fillet_circle_center_x )
 	angle_end_dd = math.atan2(temp_ded[2][1] - fillet_circle_center_y, temp_ded[1][1] - fillet_circle_center_x)
@@ -173,7 +172,7 @@ if input_fr_p == false then
 
 	pt_de_p = { 0, hf_p_r }
 	test = { { pt_de_p[1] }, { pt_de_p[2] } }
-	pt_de_p = rot_table_mat(2 * pi / (2 * z_p), test)
+	pt_de_p = rot_table_mat(2 * math.pi / (2 * z_p), test)
 
 	angle_start_dd = math.atan2(dedendum_pt_p[2][1] - 0, dedendum_pt_p[1][1] - 0 )
 	angle_end_dd = math.atan2(pt_de_p[2][1] - 0, pt_de_p[1][1] - 0)
@@ -198,7 +197,7 @@ tooth_profile_y_p = arr_merge(tooth_profile_left_y, arr_reverse(tooth_profile_ri
 
 tooth_profile_p = { tooth_profile_x_p, tooth_profile_y_p }
 
-rot_angle = 2 * pi / z_p
+rot_angle = 2 * math.pi / z_p
 
 x_pinion = {}
 y_pinion = {}
