@@ -1,7 +1,7 @@
 require "gear"
 require "pinion"
 
-counter = ui_scalarBox('Animate/Rotate',0 ,1) 
+counter = ui_scalar('Animate/Rotate',2 ,1, 1000) 
 
 m_in = ui_scalarBox('Module',3,0.1)
 resolution = ui_radio('Resolution', {  {60, "low"}, {80, "medium"}, {100, "high"} })
@@ -23,6 +23,6 @@ abs_z_p = math.abs(z_p)
 abs_r_s_in = math.abs(r_s_in) 
 
 ratio = abs_z_p/abs_z_w 
-create_pinion(counter, ratio * abs_z_w , abs_z_p, abs_m_in, resolution, height, abs_z_w, r_s_p_in, input_fr_p_UI, pinion_offset)
-create_gear(counter, ratio * abs_z_p, abs_z_w, abs_m_in, resolution, height, input_fr_w_UI, show_cutouts, abs_z_p, abs_r_s_in)
+create_pinion(counter, 1 , abs_z_p, abs_m_in, resolution, height, abs_z_w, r_s_p_in, input_fr_p_UI, pinion_offset)
+create_gear(counter, ratio, abs_z_w, abs_m_in, resolution, height, input_fr_w_UI, show_cutouts, abs_z_p, abs_r_s_in)
 
