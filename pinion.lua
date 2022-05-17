@@ -3,7 +3,7 @@ require "functions_array"
 require "functions_gear"
 
 
-function create_pinion(counter, increment, z_p_in, m_in, resolution, height, z_w_in, r_s_p_in, input_fr_p_UI)
+function create_pinion(counter, increment, z_p_in, m_in, resolution, height, z_w_in, r_s_p_in, input_fr_p_UI, offset)
 
 pi = 3.14159265
 
@@ -221,7 +221,7 @@ dir = v(0,0,height)
 
 FinalShape = { linear_extrude(dir, points_v), linear_extrude(dir, shaft) }
 diff = difference(FinalShape)
-
+diff = rotate(0, 0, offset) * diff
 
 dist= r_w+r_p
 emit(translate(0,dist,0) * rotate(0, 0, -counter * increment) * diff)
