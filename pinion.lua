@@ -1,6 +1,6 @@
  -- Welcome to IceSL!
-require "functions_array"
-require "functions_gear"
+require "lib/functions_array"
+require "lib/functions_gear"
 
 
 function create_pinion(counter, increment, z_p_in, m_in, resolution, height, z_w_in, r_s_p_in, input_fr_p_UI, offset)

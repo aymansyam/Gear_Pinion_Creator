@@ -1,6 +1,6 @@
-require "functions_array"
-require "functions_gear"
-require "functions_vector"
+require "lib/functions_array"
+require "lib/functions_gear"
+require "lib/functions_vector"
 -- User Inputs:
 
 
