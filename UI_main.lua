@@ -14,29 +14,37 @@ require "gear"
 require "pinion"
 
 
---enable_variable_cache = true            -- to hold on parameters if UI is switched OFF
+enable_variable_cache = true            -- to hold on parameters if UI is switched OFF
 
-ui_mode = ui_bool('show UI',true)       -- Boolean variable to show/hide UI
+
+language_choice = ui_radio('Language/Sprache', {  {1, "English"}, {2, "Deutsch"} })
+
+lang_res = { 'Animate/Rotate ', 'Module ', 'Resolution ', 'Height ', 'Show Wheel Fillet', 'Show Cutouts', 'Number of Teeth, Wheel', 'Shaft Diameter Wheel', 'Show Pinion Fillet', 'Number of Teeth, Pinion', 'Shaft Diameter Pinion', 'Show Pinion', 'Show Gear', 'Take Screenshot', 'Printing Mode', 'show UI'}
+if language_choice == 2 then 
+    lang_res = { 'Rotieren', 'Module', 'Resolution', 'Hoehe', 'Zeige Wheel Fillet', 'Zeige Ausschneiden', 'Anzahl Zaehne Wheel', 'Wheel Durchmesser', 'Zeige Pinion Fillet', 'Anzahl Zaehle Pinion', 'Zeige Durchmesser Pinion', 'Zeige Pinion', 'Zeige Gear', 'Screenshot Nehmen', 'Drucken Mode', 'Zeige UI'}
+end
+
+ui_mode = ui_bool(lang_res[16],true)       -- Boolean variable to show/hide UI
 
 ------------------------
 -- User Interface
 ------------------------
 
 if (ui_mode == true) then 
-    counter = ui_scalar('Animate/Rotate',2 ,1, 1000)                                       -- creating a scroll bar for rotating the gear/pinion
+    counter = ui_scalar(lang_res[1],2 ,1, 1000)                                       -- creating a scroll bar for rotating the gear/pinion
 
-    m_in = ui_scalarBox('Module',3,0.1)                                                    -- Module user input
-    resolution = ui_radio('Resolution', {  {60, "low"}, {80, "medium"}, {100, "high"} })   -- resolution user input 
-    height = ui_scalarBox('Height', 10, 1)                                                 -- height user input 
+    m_in = ui_scalarBox(lang_res[2], 3,0.1)                                                    -- Module user input
+    resolution = ui_radio(lang_res[3], {  {60, "low"}, {80, "medium"}, {100, "high"} })   -- resolution user input 
+    height = ui_scalarBox(lang_res[4], 10, 1)                                                 -- height user input 
 
-    input_fr_w_UI = ui_bool('Show Wheel Fillet',false)                                     -- Show/Hide Wheel Fillet user input 
-    show_cutouts = ui_bool('Show Cutouts',false)                                           -- Show/Hide Wheel cutouts user input 
-    z_w = ui_numberBox('Number of Teeth, Wheel', 37)                                       -- Wheel number of teeth user input
-    r_s_in = ui_numberBox ('Shaft Diameter wheel',4)                                       -- Wheel shaft diameter user input 
+    input_fr_w_UI = ui_bool(lang_res[5],false)                                     -- Show/Hide Wheel Fillet user input 
+    show_cutouts = ui_bool(lang_res[6],false)                                           -- Show/Hide Wheel cutouts user input 
+    z_w = ui_numberBox(lang_res[7], 37)                                       -- Wheel number of teeth user input
+    r_s_in = ui_numberBox (lang_res[8],4)                                       -- Wheel shaft diameter user input 
 
-    input_fr_p_UI = ui_bool('Show Pinion Fillet',false)                                    -- Show/Hide pinion Fillet user input 
-    z_p = ui_numberBox('Number of Teeth, Pinion', 9)                                       -- Pinion number of teeth user input
-    r_s_p_in = ui_numberBox ('Shaft Diameter Pinion',4)                                    -- Pinion shaft diameter user input 
+    input_fr_p_UI = ui_bool(lang_res[9],false)                                    -- Show/Hide pinion Fillet user input 
+    z_p = ui_numberBox(lang_res[10], 9)                                       -- Pinion number of teeth user input
+    r_s_p_in = ui_numberBox (lang_res[11],4)                                    -- Pinion shaft diameter user input 
 
 
 ------------------------
@@ -57,9 +65,73 @@ if (ui_mode == true) then
 ------------------------
 -- Calling Gear and Pinion Functions
 ------------------------
-create_pinion(counter, 1 , abs_z_p, abs_m_in, resolution, height, abs_z_w, r_s_p_in, input_fr_p_UI)
+create_pinion(counter, 1 , abs_z_p, abs_m_in, resolution, height, abs_z_w, r_s_p_in, input_fr_p_UI, 0)
 create_gear(counter, ratio, abs_z_w, abs_m_in, resolution, height, input_fr_w_UI, show_cutouts, abs_z_p, abs_r_s_in, ratio)
 
+
+else
+    printing_mode = ui_bool(lang_res[15], false)
+	
+		if (printing_mode == true) then
+
+--	show_system = ui_bool('Show System', false)
+
+	--	if (show_system == true) then 
+		
+--	create_pinion(counter, 1 , abs_z_p, abs_m_in, resolution, height, abs_z_w, r_s_p_in, input_fr_p_UI, pinion_offset, pinion_translation_offset)
+--	create_gear(counter, ratio, abs_z_w, abs_m_in, resolution, height, input_fr_w_UI, show_cutouts, abs_z_p, abs_r_s_in, ratio)
+	
+--		end 
+
+
+	-- screenshot()
+    show_pinion = ui_bool(lang_res[12], false)
+	
+    if (show_pinion == true) then 
+	create_pinion(counter, 1 , abs_z_p, abs_m_in, resolution, height, abs_z_w, r_s_p_in, input_fr_p_UI, 30)
+
+
+
+    end 
+
+    show_gear = ui_bool(lang_res[13], false)
+
+    if (show_gear == true) then 
+	create_gear(counter, ratio, abs_z_w, abs_m_in, resolution, height, input_fr_w_UI, show_cutouts, abs_z_p, abs_r_s_in, ratio)
+
+    end
+		 -- pinion_translation_offset = ui_numberBox('Seperation Distance',50) 
+
+    take_screenshot = ui_bool(lang_res[14], false)
+	
+	if (take_screenshot == true) then 
+	
+	screenshot()
+	
+	end 
+
 end
+
+
+end
+
+
+
+
+
+
+
+
+
+
+
+balance_cube_1 = ccube(1)
+new_cube = translate (100,100,0) * balance_cube_1 
+emit(new_cube)
+
+
+balance_cube_2 = ccube(1)
+new_cube2 = translate (-100,-100,0) * balance_cube_2
+emit(new_cube2)
 
 
