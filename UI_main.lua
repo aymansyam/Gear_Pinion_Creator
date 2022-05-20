@@ -14,7 +14,7 @@ require "gear"
 require "pinion"
 
 
-enable_variable_cache = true            -- to hold on parameters if UI is switched OFF
+--enable_variable_cache = true            -- to hold on parameters if UI is switched OFF
 
 
 language_choice = ui_radio('Language/Sprache', {  {1, "English"}, {2, "Deutsch"} })

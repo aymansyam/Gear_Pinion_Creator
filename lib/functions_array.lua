@@ -10,15 +10,6 @@ function arr_mult1(arr,factor)
   return ans
 end
 
-function arr_mult2(arr1,arr2)
--- element wise multiplication of arr1 & arr2
-  local ans = {}
-  for i in ipairs(arr1) do
-    ans[i] = arr1[i]*arr2[i]
-  end
-  return ans
-end
-
 function arr_div1(arr,factor)
 -- divide all elements in arr over the factor
   local ans = {}
@@ -27,43 +18,6 @@ function arr_div1(arr,factor)
   end
   return ans
 end
-
-function arr_div2(arr1,arr2)
--- element wise division of arr1 / arr2
-  local ans = {}
-  for i in ipairs(arr1) do
-    ans[i] = arr1[i]/arr2[i]
-  end
-  return ans
-end
-
-function arr_pow(arr,power)
--- elements in arr to a power: (power)
-  local ans = {}
-  for i in ipairs(arr) do
-    ans[i] = math.pow(arr[i],power)
-  end
-  return ans
-end
-
-function arr_square(arr)
--- elements in arr to a power = 2:
-  local ans = {}
-  for i in ipairs(arr) do
-    ans[i] = math.pow(arr[i],2)
-  end
-  return ans
-end
-
-function arr_sqrt(arr)
--- square root of all elements in arr
-  local ans = {}
-  for i in ipairs(arr) do
-    ans[i] = math.sqrt(arr[i])
-  end
-  return ans
-end
-
 
 function arr_cos(arr)
 -- find the cos values for all arr elements
@@ -83,24 +37,6 @@ function arr_sin(arr)
   return ans
 end
 
-function arr_tan(arr)
--- find the tan values for all arr elements
-  local ans = {}
-  for i in ipairs(arr) do
-    ans[i] = math.tan(arr[i])
-  end
-  return ans
-end
-
-function arr_atan(arr)
--- find the atan values for all arr elements
-  local ans = {}
-  for i in ipairs(arr) do
-    ans[i] = math.atan(arr[i])
-  end
-  return ans
-end
-
 function arr_add1(arr,factor)
 -- add the factor to all arr elements
   local ans = {}
@@ -115,15 +51,6 @@ function arr_add2(arr1,arr2)
   local ans = {}
   for i in ipairs(arr1) do
     ans[i] = arr1[i]+arr2[i]
-  end
-  return ans
-end
-
-function arr_subt1(arr,factor)
--- Subtract the factor from all arr elements
-  local ans = {}
-  for i in ipairs(arr) do
-    ans[i] = arr[i]-factor
   end
   return ans
 end
@@ -147,36 +74,7 @@ return out
 
 end
 
-function arr_min(arr)
--- find the minimum value from arr elements
-  local min = arr[1]
-  local idx = 1
-  for i in ipairs(arr) do
-    if arr[i] < min then
-        min = arr[i]
-        idx = i
-    end
-  end
-  return min,idx
-end
-
-function arr_below(arr,val)
--- find the index of first array element below a specific value
-  local idx = 1
-  --print("\nInv   "..val)
-  for i in ipairs(arr) do
-    if arr[i] < val then
-        idx = i
-    end
-  end
-  return idx
-end
-
-
-
-
 -- Array manipulations
-
 
 function linspaces(p1,p2,N)
   -- Make linearly spaced array from (p1) to (p2) with (N) number of steps
@@ -216,8 +114,7 @@ function linspaces(p1,p2,N)
     end
     return ans
   end
-  
-  
+
   function arr_reverse(arr)
   -- flip the elements in arr
       local reversed_arr = {}
@@ -227,48 +124,7 @@ function linspaces(p1,p2,N)
       end
       return reversed_arr
   end
-  
-  function table_reverse(table)
-  -- flip the elements in table for all columns(x & y)
-      local ans = {}
-      ans.x = {}
-      ans.y = {}
-      local itemCount = #table.x
-      for i=1, itemCount do
-          ans.x[itemCount-i+1] = table.x[i]
-          ans.y[itemCount-i+1] = table.y[i]
-      end
-      return ans
-  end
-  
-  function table_mirror(table,x_factor,y_factor)
-  -- mirror the table around X or Y
-  -- Note: to mirror around X-Axis use x_factor = -1
-      local ans = {}
-      ans.x = {}
-      ans.y = {}
-      local itemCount = #table.x
-      for i=1, itemCount do
-          ans.x[i] = table.x[i]*x_factor
-          ans.y[i] = table.y[i]*y_factor
-      end
-      return ans
-  end
-  
-  
-  
-  function linear_extrude_arr(dirction,arr_x,arr_y,angle)
-  -- make linear extrude for array points
-  -- note: (angle) in [rad]
-    local V = {}
-    local th = angle*180/Pi
-    for i in ipairs(arr_x) do
-      V[i] = rotate( th,Z)*v(arr_x[i],arr_y[i])
-      --print("\nX = "..V[i].x) print("\tY = "..V[i].y)
-    end
-    return linear_extrude(dirction, V)
-  end
-  
+
   function rot_table(Table,angle)
   -- rotate vertices (X,Y) around Z-axis, as a table input and output
   -- note: (angle) in [rad]
@@ -316,83 +172,16 @@ function linspaces(p1,p2,N)
     m_out = MatMul(R_z, mat)
     return m_out
   end
-  
-  function print_arr(input_arr)
-  -- print all input_arr values to the console:
-    local arr = {}
-    arr = input_arr
-    --print("\narr = "..input_arr[1])
-    for i=1, #arr do
-      print("\narr = "..arr[i]) print(" ")
-    end  
-  end
-  
-  function arr_intersection(arr1,arr2)
-  -- find the intersection of 2 array sets in the table form (arr1.x, arr1.y, arr2.x, arr2.y)
-  -- return: key which contains the index of intersection for arr1 & arr2
-    local dist = {}
-    for i in ipairs(arr1.x) do
-      dist[i] = {}
-      for j in ipairs(arr2.x) do
-        dist[i][j] = distance(arr1.x[i],arr1.y[i],arr2.x[j],arr2.y[j])
-      end
-    end
-    --find the minimum distance
-    local min_val = dist[1][1]
-    local key = {-1,-1}
-    for i in ipairs(arr1.x) do
-        for j in ipairs(arr2.x) do 
-          if dist[i][j] < min_val then
-              min_val = dist[i][j]
-              key = {i,j}
-          end
-        end    
-    end
-    return key
-  end
-  
-  
+
   function distance(p1_x,p1_y,p2_x,p2_y)
   -- calculate and return the distance between 2 points in X,Y coordinates
     dist = math.sqrt((p2_x-p1_x)^2+(p2_y-p1_y)^2)
     return dist
   end
-  
-  
-  function arr_resize(arr,idx1,idx2)
-  -- remove some elements of table
-  -- new array will be from idx1 to idx2 only
-  -- note: idx2 = -1 will take the index of final element in arr
-    local ans = {}
-    ans.x = {}
-    ans.y = {}
-    if idx2 == -1 then
-      idx2 = #arr.x
-    end
-    local range = idx2-idx1
-    local j = 0
-    for i=1, range+1 do
-      ans.x[i] = arr.x[idx1+j]
-      ans.y[i] = arr.y[idx1+j]
-      j = j+1
-    end
-    return ans
-  end
-  
+
   --------------------------------------------------
   
   -- Local Functions:
-  function print_inputs(input_arr, parameter)
-  -- print input values to the console:
-    for key,value in pairs(input_arr) do
-      print("\n") print(tostring(key)) print("\t\t")
-    if (type(value) == "table" and parameter ~= "no tables") then
-      print(tprint(value))
-    else
-      print(tostring(value))
-    end
-    end  
-  end
   
   function tprint (tbl, indent)
     if (type(tbl) ~= "table") then
@@ -422,24 +211,4 @@ function linspaces(p1,p2,N)
     return toprint
   end
   
-  
-  function print_arr(input_arr)
-  -- print input values to the console:
-    --print(type(input_arr))
-    local arr = {}
-    arr = input_arr
-    --print("\narr = "..input_arr[1])
-      for i=1, #arr do
-        s = string.format("\nA[%d]\t %f", i,arr[i])
-        print(s)
-      end
-  end
-  
-  function print_table(input_arr)
-    local table = {}
-    table = input_arr
-    for i=1, #table.x do
-      s = string.format("\nX[%d]: %f\tY[%d]: %f",i,table.x[i],i,table.y[i])
-      print(s)
-    end
-  end 
+
