@@ -371,7 +371,12 @@ end
 cutouts = make_vectors(x_cutout, y_cutout)
 diff = difference(FinalShape)
 
+if z_p % 2 == 0 then
+	magic = 32.46548 - (1.935316/0.06255424)*(1 - math.exp(-0.06255424*z_w))
 
+	-- print(tostring(magic))
+	diff = rotate(0, 0, magic) * diff -- magic!!
+end
 emit(rotate(0, 0, counter * increment) * diff)
 -- print(FinalShape) 
 
