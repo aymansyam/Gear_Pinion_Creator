@@ -375,5 +375,7 @@ diff = difference(FinalShape)
 emit(rotate(0, 0, counter * increment) * diff)
 -- print(FinalShape) 
 
+return {arc_center, a_r}
+
 end 
 

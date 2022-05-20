@@ -14,7 +14,7 @@ require "gear"
 require "pinion"
 
 
-enable_variable_cache = true            -- to hold on parameters if UI is switched OFF
+--enable_variable_cache = true            -- to hold on parameters if UI is switched OFF
 
 ui_mode = ui_bool('show UI',true)       -- Boolean variable to show/hide UI
 
@@ -37,8 +37,6 @@ if (ui_mode == true) then
     input_fr_p_UI = ui_bool('Show Pinion Fillet',false)                                    -- Show/Hide pinion Fillet user input 
     z_p = ui_numberBox('Number of Teeth, Pinion', 9)                                       -- Pinion number of teeth user input
     r_s_p_in = ui_numberBox ('Shaft Diameter Pinion',4)                                    -- Pinion shaft diameter user input 
-    pinion_offset = ui_scalarBox('Pinion Offset', 0, 1)                                    -- Pinion rotational offset user input
-    pinion_translation_offset = ui_numberBox('Seperation Distance',50)                     -- Seperation Distance user input
 
 ------------------------
 -- Absolute Values
@@ -58,48 +56,8 @@ if (ui_mode == true) then
 ------------------------
 -- Calling Gear and Pinion Functions
 ------------------------
-create_pinion(counter, 1 , abs_z_p, abs_m_in, resolution, height, abs_z_w, r_s_p_in, input_fr_p_UI, pinion_offset, pinion_translation_offset)
-create_gear(counter, ratio, abs_z_w, abs_m_in, resolution, height, input_fr_w_UI, show_cutouts, abs_z_p, abs_r_s_in, ratio)
-
-else
-    printing_mode = ui_bool('Printing Mode', false)         -- choosing Printing Mode user input
-	
-		if (printing_mode == true) then
-	
---	show_system = ui_bool('Show System', false)
-
-	--	if (show_system == true) then 
-		
---	create_pinion(counter, 1 , abs_z_p, abs_m_in, resolution, height, abs_z_w, r_s_p_in, input_fr_p_UI, pinion_offset, pinion_translation_offset)
---	create_gear(counter, ratio, abs_z_w, abs_m_in, resolution, height, input_fr_w_UI, show_cutouts, abs_z_p, abs_r_s_in, ratio)
-	
---		end 
-
-
-	-- screenshot()
-    show_pinion = ui_bool('Show Pinion', false)         -- Show/Hide pinion user choice
-	
-    if (show_pinion == true) then 
-	create_pinion(counter, 1 , abs_z_p, abs_m_in, resolution, height, abs_z_w, r_s_p_in, input_fr_p_UI, pinion_offset, pinion_translation_offset)
-
-    end 
-
-    show_gear = ui_bool('Show Gear', false)             -- Show/Hide gear user choice
-
-    if (show_gear == true) then 
-	create_gear(counter, ratio, abs_z_w, abs_m_in, resolution, height, input_fr_w_UI, show_cutouts, abs_z_p, abs_r_s_in, ratio)
-
-    end
-	
-    take_screenshot = ui_bool('Take screenshot', false)     -- Saving a screenshot of the workspace
-	
-	if (take_screenshot == true) then 
-	
-	screenshot()
-	
-	end 
-
-end
+gear_return = create_gear(counter, ratio, abs_z_w, abs_m_in, resolution, height, input_fr_w_UI, show_cutouts, abs_z_p, abs_r_s_in, ratio)
+create_pinion(counter, 1 , abs_z_p, abs_m_in, resolution, height, abs_z_w, r_s_p_in, input_fr_p_UI, gear_return)
 
 
 end

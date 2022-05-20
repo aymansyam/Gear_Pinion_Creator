@@ -17,7 +17,7 @@ require "lib/functions_gear"
 
 
 
-function create_pinion(counter, increment, z_p_in, m_in, resolution, height, z_w_in, r_s_p_in, input_fr_p_UI, offset, translation_offset)
+function create_pinion(counter, increment, z_p_in, m_in, resolution, height, z_w_in, r_s_p_in, input_fr_p_UI, gear_return)
 
 
 
@@ -301,6 +301,15 @@ tooth_profile_y_p = arr_merge(tooth_profile_left_y, arr_reverse(tooth_profile_ri
 tooth_profile_p = { tooth_profile_x_p, tooth_profile_y_p }
 
 
+bottom_tooth = rot_table_mat(pi, tooth_profile_p)
+
+
+dedendum_pt_p_bottom = rot_table_mat(pi , dedendum_pt_p)
+
+x_tooth_bottom = bottom_tooth[1]
+
+y_tooth_bottom = bottom_tooth[2]
+
 -- Rotate the tooth profile as often as z_p -1 to create the gear profile
 rot_angle = 2 * math.pi / z_p
 
@@ -314,7 +323,89 @@ for i=0, z_p - 1 do
 	y_pinion = merge_table(y_pinion, temp_wheel[2])
 end
 
-points_v = make_vectors(x_pinion, y_pinion)
+print(tprint(gear_return))
+arc_center_wheel = {{gear_return[1][1][1]}, {gear_return[1][1][2]}} -- get from wheel
+
+
+a_r_wheel = gear_return[2] -- get from wheel 
+a = r_w + r_p
+-- a_r_wheel = 1
+
+cc_pinion = {{0},{a}}
+
+distance_circle_centeres = math.sqrt((cc_pinion[1][1] - arc_center_wheel[1][1])^2 + (cc_pinion[2][1] - arc_center_wheel[2][1])^2)
+
+
+
+a1 = (r_p^2 -(a_r_wheel)^2 + distance_circle_centeres^2 )/(2*distance_circle_centeres)
+
+
+
+b = ((a_r_wheel)^2 -r_p^2 + distance_circle_centeres^2 )/(2*distance_circle_centeres)
+
+
+h = math.sqrt(r_p^2 - (a1)^2)
+
+
+
+p5 = {cc_pinion[1][1] + (a1/distance_circle_centeres)*(arc_center_wheel[1][1] - cc_pinion[1][1]), cc_pinion[2][1]  + (a1/distance_circle_centeres) *  (arc_center_wheel[2][1]- cc_pinion[2][1])}
+
+
+
+I1 = {{p5[1] - (h*(arc_center_wheel[2][1] -cc_pinion[2][1]))/distance_circle_centeres} , {p5[2] + (h*(arc_center_wheel[1][1]- cc_pinion[1][1]))/distance_circle_centeres}}
+I2 = {{p5[1] + (h*(arc_center_wheel[2][1] -cc_pinion[2][1]))/distance_circle_centeres} , {p5[2] - (h*(arc_center_wheel[1][1]- cc_pinion[1][1]))/distance_circle_centeres}}
+
+
+
+
+
+vector_pinion = {{(-dedendum_pt_p_bottom[1][2]-0)},{(dedendum_pt_p_bottom[2][2] +a-a)},{0}}
+
+
+vector_contactpoint ={{(-I2[1][1] - 0)},{(I2[2][1]-a)},{0}}
+
+
+--unit_A = arr_div1(A, math.sqrt(A[1]^2 + A[2]^2 + A[3]^2))
+
+Y = Point(vector_contactpoint[1][1],vector_contactpoint[2][1],vector_contactpoint[3][1])
+D = Point (vector_pinion[1][1],vector_pinion[2][1],vector_pinion[3][1])
+cross_contact_pinion = Y ^ D
+
+dot_contact_pinion = Y..D
+
+
+
+--offset_ang= atan2d(norm(cross(vector_contactpoint,vector_pinion)),dot(vector_contactpoint,vector_pinion));
+
+
+offset_ang= math.atan2((cross_contact_pinion[1]^2 + cross_contact_pinion[2]^2 + cross_contact_pinion[3]^2),dot_contact_pinion)
+
+
+
+offset_ang = offset_ang * (pi/180) * 2
+
+
+temp_pinion = {x_pinion, y_pinion}
+
+
+temp_pinion_final =  rot_table_mat(offset_ang ,temp_pinion )
+
+
+y_pinion_final = temp_pinion_final[2]
+
+
+
+x_pinion_final = temp_pinion_final[1]
+
+
+
+-- y_pinion_final = arr_add1(y_pinion_final , a)
+
+
+points_v = make_vectors(x_pinion_final, y_pinion_final)
+
+-- points_v = make_vectors(x_pinion, y_pinion)
+
 
 ------------------------------------------------
 -- DESIGN OF SHAFT --
@@ -335,9 +426,8 @@ dir = v(0,0,height)
 
 FinalShape = { linear_extrude(dir, points_v), linear_extrude(dir, shaft) }
 diff = difference(FinalShape)
-diff = rotate(0, 0, offset) * diff
 
 dist= r_w+r_p
-emit(translate(0,dist + translation_offset - 50,0) * rotate(0, 0, -counter * increment) * diff)
+emit(translate(0,dist,0) * rotate(0, 0, -counter * increment) * diff)
 
 end
